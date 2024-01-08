@@ -35,6 +35,24 @@ app.use(bodyParser.json());
 app.post("/api/saveFormData", async (req, res) => {
   try {
     const formData = req.body;
+
+    // Check if there is already a record with the same values for studentName, session, class, and studentRoll
+    const existingEntry = await FormDataModel.findOne({
+      studentName: formData.studentName,
+      session: formData.session,
+      class: formData.class,
+      studentRoll: formData.studentRoll,
+    });
+
+    if (existingEntry) {
+      return res
+        .status(400)
+        .json({
+          error: "Duplicate entry: Student information already exists.",
+        });
+    }
+
+    // If no duplicate entry, proceed to create a new record
     const savedFormData = await FormDataModel.create(formData);
     res.status(201).json(savedFormData);
   } catch (error) {
