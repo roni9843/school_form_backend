@@ -45,11 +45,9 @@ app.post("/api/saveFormData", async (req, res) => {
     });
 
     if (existingEntry) {
-      return res
-        .status(400)
-        .json({
-          error: "Duplicate entry: Student information already exists.",
-        });
+      return res.status(400).json({
+        error: "Duplicate entry: Student information already exists.",
+      });
     }
 
     // If no duplicate entry, proceed to create a new record
@@ -69,6 +67,30 @@ app.get("/api/getAllStudentInfo", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Define your delete route
+app.delete("/api/deleteStudent", async (req, res) => {
+  const studentId = req.query.id;
+
+  console.log(studentId);
+
+  try {
+    // Find the student by ID and delete
+    const result = await FormDataModel.findByIdAndDelete(studentId);
+
+    if (result) {
+      // Student successfully deleted
+      res.status(200).json({ message: "Student deleted successfully" });
+    } else {
+      // Student not found
+      res.status(404).json({ message: "Student not found" });
+    }
+  } catch (error) {
+    // Handle errors
+    console.error("Error deleting student:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
